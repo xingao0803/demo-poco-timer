@@ -1,0 +1,67 @@
+// Artifactory server instance, defined in Jenkins --> Manage:
+def artifactory_server = 'demo-arti'
+
+// Conan repository in Artifactory server
+def artifactory_repo = 'demo-conan-local'
+
+// User/Pass for Artifactory server
+def user_name = 'admin'
+def user_apikey = 'APBG9f7okturGUX3EH6LhxhbBmR'
+
+// Source Code project in github
+def repo_url = 'https://github.com/xingao0803/demo-poco-timer.git'
+def repo_branch = 'master'
+
+node {
+    def server
+    def client
+    def serverName
+    def buildInfo
+
+    stage("Get project"){
+        // Clone source code from github:
+        git branch: repo_branch, url: repo_url
+    }
+    
+    stage("Configure Artifactory/Conan"){
+        // Obtain an Artifactory server instance: 
+        server = Artifactory.server artifactory_server
+
+        // Create a conan client instance:
+        client = Artifactory.newConanClient()
+ 
+        // Add a new repository to the conan client.
+        // The 'remote.add' method returns a 'serverName' string, which is used later in the script:
+        serverName = client.remote.add server: server, repo: artifactory_repo
+
+        // Create a local build-info instance:
+        buildInfo = Artifactory.newBuildInfo()
+        
+        // Login the new conan remote server
+        def command = "user -r ${serverName} -p ${user_apikey} ${user_name}"
+        client.run(command: command.toString(), buildInfo: buildInfo)
+    }
+
+    stage("Get and upload dependencies"){
+        sh "mkdir -p build"
+        dir ('build') {
+            // Download dependencies, build if only source code there
+            def command = 'install .. --build missing'
+            client.run(command: command, buildInfo: buildInfo)
+
+            // Upload dependencies to Artifactory local conan repository
+            command = "upload */stable --all -r ${serverName} --confirm"
+            client.run(command: command.toString(), buildInfo: buildInfo)
+        }
+    }
+
+    stage("Build project"){
+        dir ('build') {
+            // Build with g++
+            sh "g++ ../*.cpp @conanbuildinfo.args -o timer"
+
+            // Publish the build info to Artifactory:
+            server.publishBuildInfo buildInfo
+        }
+    }
+}

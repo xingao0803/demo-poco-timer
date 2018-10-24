@@ -42,15 +42,11 @@ node {
         client.run(command: command.toString(), buildInfo: buildInfo)
     }
 
-    stage("Get and upload dependencies"){
+    stage("Get dependencies from Artifactory repository"){
         sh "mkdir -p build"
         dir ('build') {
             // Download dependencies, build if only source code there
-            def command = 'install .. --build missing'
-            client.run(command: command, buildInfo: buildInfo)
-
-            // Upload dependencies to Artifactory local conan repository
-            command = "upload */stable --all -r ${serverName} --confirm"
+            def command = "install .. -r ${serverName}"
             client.run(command: command.toString(), buildInfo: buildInfo)
         }
     }
@@ -64,7 +60,7 @@ node {
             server.publishBuildInfo buildInfo
         }
     }
-
+    
     stage("Run project"){
         dir ('build') {
             // Build with g++

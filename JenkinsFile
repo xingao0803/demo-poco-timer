@@ -50,8 +50,12 @@ node {
             client.run(command: command, buildInfo: buildInfo)
 
             // Upload dependencies to Artifactory local conan repository
+            command = "upload */stable -r ${serverName} --confirm"
+            client.run(command: command.toString(), buildInfo: buildInfo)
+            
             command = "upload */stable --all -r ${serverName} --confirm"
             client.run(command: command.toString(), buildInfo: buildInfo)
+            
         }
     }
 
@@ -67,9 +71,9 @@ node {
 
     stage("Run project"){
         dir ('build') {
-            // Build with g++
+            // Run the timer
             sh "./timer"
         }
     }
-
+    
 }

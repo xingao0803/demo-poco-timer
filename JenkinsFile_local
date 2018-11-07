@@ -4,6 +4,9 @@ def artifactory_server = 'demo-arti'
 // Conan repository in Artifactory server
 def artifactory_repo = 'demo-conan-local'
 
+// Binary repository in Artifactory server
+def binary_repo = 'demo-cpp-local'
+
 // User/Pass for Artifactory server
 def user_name = 'admin'
 def user_apikey = 'APBG9f7okturGUX3EH6LhxhbBmR'
@@ -55,16 +58,32 @@ node {
         dir ('build') {
             // Build with g++
             sh "g++ ../*.cpp @conanbuildinfo.args -o timer"
-
-            // Publish the build info to Artifactory:
-            server.publishBuildInfo buildInfo
         }
     }
     
     stage("Run project"){
         dir ('build') {
-            // Build with g++
             sh "./timer"
+        }
+    }
+
+    stage("Upload binary"){
+        dir ('build') {
+            // Upload binary app with settings to artifactory
+            tartgetRepo = "${binary_repo}/poco-timer/${buildInfo.number}/"
+            def uploadSpec = """{
+                "files": [
+                    {
+                        "pattern": "./timer",
+                        "target": "${tartgetRepo}",
+                        "props": "arch=x86_64;arch_build=x86_64;compiler=apple-clang;compiler.libcxx=libc++;compiler.version=9.1;os=Macos;os_build=Macos"
+                    }
+                ]
+            }""" 
+
+            def buildInfo1 = server.upload(uploadSpec)
+            buildInfo.append buildInfo1
+            server.publishBuildInfo buildInfo
         }
     }
 

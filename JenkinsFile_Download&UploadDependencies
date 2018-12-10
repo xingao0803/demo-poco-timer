@@ -4,6 +4,9 @@ def artifactory_server = 'demo-arti'
 // Conan repository in Artifactory server
 def artifactory_repo = 'demo-conan-local'
 
+// Binary repository in Artifactory server
+def binary_repo = 'demo-cpp-local'
+
 // User/Pass for Artifactory server
 def user_name = 'admin'
 def user_apikey = 'APBG9f7okturGUX3EH6LhxhbBmR'
@@ -42,38 +45,26 @@ node {
         client.run(command: command.toString(), buildInfo: buildInfo)
     }
 
-    stage("Get and upload dependencies"){
+    stage("Download dependencies from remote conan repository"){
         sh "mkdir -p build"
         dir ('build') {
             // Download dependencies, build if only source code there
             def command = 'install .. --build missing'
             client.run(command: command, buildInfo: buildInfo)
+        }
+    }
 
+    stage("Upload dependencies to local Artifactory conan repository"){
+        dir ('build') {
             // Upload dependencies to Artifactory local conan repository
-            command = "upload */stable -r ${serverName} --confirm"
-            client.run(command: command.toString(), buildInfo: buildInfo)
-            
             command = "upload */stable --all -r ${serverName} --confirm"
             client.run(command: command.toString(), buildInfo: buildInfo)
-            
         }
     }
 
-    stage("Build project"){
-        dir ('build') {
-            // Build with g++
-            sh "g++ ../*.cpp @conanbuildinfo.args -o timer"
-
-            // Publish the build info to Artifactory:
-            server.publishBuildInfo buildInfo
-        }
+    stage("Publish BuildInfo"){
+        // Publish the build info to Artifactory:
+        server.publishBuildInfo buildInfo
     }
 
-    stage("Run project"){
-        dir ('build') {
-            // Run the timer
-            sh "./timer"
-        }
-    }
-    
 }

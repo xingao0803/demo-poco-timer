@@ -4,9 +4,6 @@ def artifactory_server = 'demo-arti'
 // Conan repository in Artifactory server
 def artifactory_repo = 'demo-conan-local'
 
-// Binary repository in Artifactory server
-def binary_repo = 'demo-cpp-local'
-
 // User/Pass for Artifactory server
 def user_name = 'admin'
 def user_apikey = 'APBG9f7okturGUX3EH6LhxhbBmR'

@@ -39,7 +39,7 @@ node {
         
         // Login the new conan remote server
         def command = "user -r ${serverName} -p ${user_apikey} ${user_name}"
-        client.run(command: command.toString(), buildInfo: buildInfo)
+        client.run(command: command.toString())
     }
 
     stage("Download dependencies from remote conan repository"){
@@ -47,7 +47,7 @@ node {
         dir ('build') {
             // Download dependencies, build if only source code there
             def command = 'install .. --build missing'
-            client.run(command: command, buildInfo: buildInfo)
+            client.run(command: command)
         }
     }
 

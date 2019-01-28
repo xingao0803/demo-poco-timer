@@ -11,9 +11,9 @@ JenkinsFile_Download&UploadDependencies ---  Jenkins pipeline to download depend
 JenkinsFile_ConanPipeline  ---  The whole Jenkins Pipeline for conan project with dependencies in local Artifactory conan repository
 
 scripts   ---   Scripts for cpp application in Generic repository
-  + upload-app   Upload cpp application to Generic repository
-  + add-settings Add setting properties for cpp application in Generic repository
-  + add-test     Add test results for cpp application in Generic repository
-  + 1timer.aql   AQL to check the latest timer application in Generic repository
-  + query-aql    To query the latest timer application in Generic repository
-  + download-app Download cpp application from Generic repositpry
+  + upload-app   --- Upload cpp application to Generic repository
+  + add-settings --- Add setting properties for cpp application in Generic repository
+  + add-test     --- Add test results for cpp application in Generic repository
+  + 1timer.aql   --- AQL to check the latest timer application in Generic repository
+  + query-aql    --- To query the latest timer application in Generic repository
+  + download-app --- Download cpp application from Generic repositpry

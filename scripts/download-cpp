@@ -1,0 +1,6 @@
+apiKeyResp=`curl -s -u <user>:<password> http://<artifactory-site>/artifactory/api/security/apiKey`
+
+apiKey=`echo $apiKeyResp | awk -F '":"' '{print $2}' | awk -F '"}' '{print $1}' `
+
+set -x
+curl -H "X-JFrog-Art-Api: ${apiKey}" -O "http://<artifactory-site>/artifactory/conanapp-dev-local/poco-timer/{$1}/timer-{$1}"

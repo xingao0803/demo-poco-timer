@@ -1,0 +1,10 @@
+items.find({
+    "repo":"conanapp-dev-local",
+    "name":{"$match":"timer-*"},
+    "@test":{"$eq":"done"},
+    "@arch":{"$eq":"x86_64"},
+    "@os":{"$eq":"Linux"},
+    "@compiler":{"$eq":"gcc"}
+}).sort({
+    "$desc": ["created"]
+}).limit(1)

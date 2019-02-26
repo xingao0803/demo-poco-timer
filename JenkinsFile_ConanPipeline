@@ -12,7 +12,7 @@ def release_repo = 'conanapp-release-local'
 
 // User/Pass for Artifactory server
 def user_name = 'admin'
-def user_apikey = 'APBG9f7okturGUX3EH6LhxhbBmR'
+def user_apikey = '<apikey>'
 
 // Source Code project in github
 def repo_url = 'https://github.com/xingao0803/demo-poco-timer.git'
@@ -126,10 +126,10 @@ node {
         //Add test results
         if (test) {
             sleep 3
-            sh "curl -X PUT http://demo.jfrogchina.com/artifactory/api/storage/${dev_repo}/poco-timer/${buildInfo.number}/timer-${buildInfo.number}?properties=test=done -u${user_name}:${user_apikey}"
+            sh "curl -X PUT http://<artifactory-site>/artifactory/api/storage/${dev_repo}/poco-timer/${buildInfo.number}/timer-${buildInfo.number}?properties=test=done -u${user_name}:${user_apikey}"
         } else {
             echo 'Test NOT finished yet, stop here.'
-            sh "curl -X PUT http://demo.jfrogchina.com/artifactory/api/storage/${dev_repo}/poco-timer/${buildInfo.number}/timer-${buildInfo.number}?properties=test=failed -u${user_name}:${user_apikey}"    
+            sh "curl -X PUT http://<artifactory-site>/artifactory/api/storage/${dev_repo}/poco-timer/${buildInfo.number}/timer-${buildInfo.number}?properties=test=failed -u${user_name}:${user_apikey}"    
             error("Pipeline failed because of test failed")
         }
     }
@@ -191,10 +191,10 @@ node {
         //Add test results
         if (deploy) {
             sleep 3
-            sh "curl -X PUT http://demo.jfrogchina.com/artifactory/api/storage/${release_repo}/poco-timer/${buildInfo.number}/timer-${buildInfo.number}?properties=deploy=done -u${user_name}:${user_apikey}"
+            sh "curl -X PUT http://<artifacotry-site>/artifactory/api/storage/${release_repo}/poco-timer/${buildInfo.number}/timer-${buildInfo.number}?properties=deploy=done -u${user_name}:${user_apikey}"
         } else {
             echo 'Deploy NOT finished yet, stop here.'
-            sh "curl -X PUT http://demo.jfrogchina.com/artifactory/api/storage/${release_repo}/poco-timer/${buildInfo.number}/timer-${buildInfo.number}?properties=deploy=failed -u${user_name}:${user_apikey}"
+            sh "curl -X PUT http://<artifactory-site>/artifactory/api/storage/${release_repo}/poco-timer/${buildInfo.number}/timer-${buildInfo.number}?properties=deploy=failed -u${user_name}:${user_apikey}"
             error("Pipeline failed because of deploy failed")
         }
     }
